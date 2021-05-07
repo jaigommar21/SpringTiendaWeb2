@@ -32,6 +32,9 @@ public class ProductoController {
 		logger.info("call index()");
 		
 		List<Producto> productos = productoService.findAll();
+		
+		logger.info(productos.toString());
+		
 		model.addAttribute("productos", productos);
 		
 		return "productos/index";
