@@ -1,6 +1,7 @@
 package pe.edu.tecsup.tienda.controllers;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
@@ -10,6 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -52,7 +57,32 @@ public class ProductoController {
 		
 		return "productos/index";
 	}
+	
+	
+	@GetMapping("/images/{filename:.+}")
+	public ResponseEntity<Resource> images(@PathVariable String filename) 
+			throws Exception{
+		
+		logger.info("call images(filename: " + filename + ")");
+		
+		Path path = Paths.get(STORAGEPATH).resolve(filename);
+		logger.info("Path: " + path);
+		
+		if(!Files.exists(path)) 
+			return ResponseEntity.notFound().build();
+		
+		
+		Resource resource = new UrlResource(path.toUri());
+		logger.info("Resource: " + resource);
+		
+		return ResponseEntity.ok()
+				.header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\""+resource.getFilename()+"\"")
+				.header(HttpHeaders.CONTENT_TYPE, Files.probeContentType(Paths.get(STORAGEPATH).resolve(filename)))
+				.header(HttpHeaders.CONTENT_LENGTH, String.valueOf(resource.contentLength()))
+				.body(resource);
+	}	
 
+	
 	@GetMapping("/create")
 	public String create(Model model) throws Exception {
 		logger.info("call create()");
