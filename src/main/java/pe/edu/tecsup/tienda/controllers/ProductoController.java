@@ -9,6 +9,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -65,6 +66,10 @@ public class ProductoController {
 		return "productos/create";
 	}
 	
+	@Value("${app.storage.path}")
+    private String STORAGEPATH;
+
+	
 	
 	@PostMapping("/store")
 	public String store(@ModelAttribute Producto producto, 
@@ -75,15 +80,24 @@ public class ProductoController {
 		
 		logger.info("call store(producto: " + producto + ")");
 		
-		/*
+		
 		if(file != null && !file.isEmpty()) {
+			
+			// Defino nombre del archivo
 			String filename = System.currentTimeMillis() + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+			
+			// Grabo el nombre del archivo en producto
 			producto.setImagen_nombre(filename);
-			if(Files.notExists(Paths.get(STORAGEPATH))){
+			
+			// Pregunta si existe el directorio donde se almacenan las imagenes
+			if(Files.notExists(Paths.get(STORAGEPATH)))
 		        Files.createDirectories(Paths.get(STORAGEPATH));
-		    }
-			Files.copy(file.getInputStream(), Paths.get(STORAGEPATH).resolve(filename), StandardCopyOption.REPLACE_EXISTING);
-		}*/
+		    
+			// Copiar el archivo a la posicion indicada.
+			Files.copy(file.getInputStream(), 
+						Paths.get(STORAGEPATH).resolve(filename), 
+						StandardCopyOption.REPLACE_EXISTING);
+		}
 		
 		producto.setCreado(new Date());
 		producto.setEstado(1);
