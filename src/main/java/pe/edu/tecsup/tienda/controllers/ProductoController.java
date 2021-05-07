@@ -141,7 +141,52 @@ public class ProductoController {
 	}
 
 	
+	@GetMapping("/edit/{id}")
+	public String edit(@PathVariable Long id, Model model) throws Exception {
+		logger.info("edit edit(id: " + id + ")");
+		
+		List<Categoria> categorias = categoriaService.findAll();
+		model.addAttribute("categorias", categorias);
+		
+		Producto producto = productoService.findById(id);
+		model.addAttribute("producto", producto);
+		
+		return "productos/edit";
+	}
 	
+	@PostMapping("/update")
+	public String update(@ModelAttribute Producto producto, 
+						 Errors errors, 
+			             @RequestParam MultipartFile file,
+			             RedirectAttributes redirectAttrs) throws Exception{
+		
+		logger.info("call update(producto: " + producto + ")");
+		
+		if(file != null && !file.isEmpty()) {
+			// Nombre de archivo
+			String filename = System.currentTimeMillis() + file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
+			//
+			producto.setImagen_nombre(filename);
+			
+			//
+			if(Files.notExists(Paths.get(STORAGEPATH)))
+		        Files.createDirectories(Paths.get(STORAGEPATH));
+		    
+			//
+			Files.copy(file.getInputStream(), 
+						Paths.get(STORAGEPATH).resolve(filename), 
+						StandardCopyOption.REPLACE_EXISTING);
+		}
+		
+		// Actualizas el producto en la base de datos
+		productoService.save(producto);
+		
+		redirectAttrs.addFlashAttribute("message", "Registro actualizado correctamente");
+		
+		return "redirect:/productos/";
+	}
+
+
 	
 	
 	
