@@ -1,10 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <title>Lista de Productos</title>
+    <th:block th:fragment="assets">
+    <script type="text/javascript" th:inline="javascript">
+        $(function(){
+            
+        });
+    </script>
+    </th:block>
 </head>
 <body>
-    Hola Mundo
+
+	<nav th:fragment="nav" aria-label="breadcrumb">
+		<ol class="breadcrumb my-3">
+			<li class="breadcrumb-item"><a href="#">Inicio</a></li>
+			<li class="breadcrumb-item"><a href="#">Mantenimiento</a></li>
+			<li class="breadcrumb-item active" aria-current="page">Productos</li>
+		</ol>
+	</nav>
+
+    <th:block th:fragment="content">
+
+		<div class="card">
+			<div class="card-header">
+            	Lista de Productos
+            </div>
+            <div class="card-body">
+            
+            	<table class="table table-borderless table-striped mb-0">
+		            <thead>
+		                <tr>
+		                    <th>ID</th>
+							<th>Categor&iacute;a</th>
+							<th>Nombre</th>
+							<th>Precio</th>
+							<th>Stock</th>
+							<th>Image</th>
+							<th></th>
+							<th></th>
+		                </tr>
+		            </thead>
+		            <tbody>
+		                <tr th:each="producto : ${productos}">
+		                    <td th:text="${producto.id}">100</td>
+		                    <td th:text="${producto.categoria.nombre}">Procesadores</td>
+		                    <td th:text="${producto.nombre}">Intel Corei7</td>
+		                   	<td th:text="${'$' + producto.precio}">$240.10</td>
+		                   	<td th:text="${producto.stock}">12</td>
+		                   	<td><img src="" alt="" th:if="${producto.imagen_nombre != null}" th:src="@{/productos/images/} + ${producto.imagen_nombre}" th:alt="${producto.imagen_nombre}" class="img-thumbnail" style="height: 30px"/></td>
+		                   	<td class="text-right">
+		                   		<a href="#" th:href="@{/productos/edit/} + ${producto.id}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> Editar</a></td>
+                                       <td class="text-right">
+		                   		<a href="#" th:href="@{/productos/delete/} + ${producto.id}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Eliminar</a>
+	                   		</td>
+		                </tr>
+		            </tbody>
+		        </table>
+            
+            </div>
+            <div class="card-footer">
+            	<a href="#" th:href="@{/productos/create}" class="btn btn-success"><i class="fa fa-plus"></i> Nuevo</a>
+            </div>
+		</div>
+
+    </th:block>
+    
 </body>
 </html>
