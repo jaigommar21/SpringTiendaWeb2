@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pe.edu.tecsup.tienda.entities.Categoria;
 import pe.edu.tecsup.tienda.entities.Producto;
 import pe.edu.tecsup.tienda.services.CategoriaService;
 import pe.edu.tecsup.tienda.services.ProductoService;
@@ -42,6 +43,19 @@ public class ProductoController {
 		return "productos/index";
 	}
 
+	@GetMapping("/create")
+	public String create(Model model) throws Exception {
+		logger.info("call create()");
+		
+		List<Categoria> categorias = categoriaService.findAll();
+		model.addAttribute("categorias", categorias);
+		
+		Producto producto = new Producto();
+		model.addAttribute("producto", producto);
+		
+		return "productos/create";
+	}
+	
 	
 	@GetMapping("/delete/{id}")
 	public String delete(@PathVariable Long id, RedirectAttributes redirectAttrs) 
